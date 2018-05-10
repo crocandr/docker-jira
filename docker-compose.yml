@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=SuperSecret
+      - MYSQL_DATABASE=jira
+      - MYSQL_USER=jira
+      - MYSQL_PASSWORD=jira
+      - LC_ALL=C.UTF-8
+    volumes:
+      - './db/data:/var/lib/mysql'
+      - '/etc/localtime:/etc/localtime:ro'
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+  jira:
+    image: blacklabelops/jira
+    environment:
+      - JIRA_DATABASE_URL=mysql://db/jira
+      - JIRA_DB_USER=jira
+      - JIRA_DB_PASSWORD=jira
+      - DOCKER_WAIT_HOST=db
+#      - DOCKER_WAIT_PORT=3306
+      - DOCKER_WAIT_TIMEOUT=3600
+      - DOCKER_WAIT_INTERVAL=10
+#      - JIRA_PROXY_NAME=myhost.example.com
+#      - JIRA_PROXY_PORT=443
+#      - JIRA_PROXY_SCHEME=https
+      - LC_ALL=C.UTF-8 
+    volumes:
+      - './data:/var/atlassian/jira'
+    ports:
+      - '8080:8080'
+    restart: always
